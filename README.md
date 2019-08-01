@@ -1,6 +1,6 @@
-# Lovelace custom card for BKK Stop Information Home Assistant custom component
+# Lovelace custom card for BKK Stop Information
 
-This Lovelace custom card shows Budapest Public Transportation (BKK)
+This Lovelace custom card displays Budapest Public Transportation (BKK)
 line information departing in the near future from a configurable stop.<p>
 This custom card depends on the BKK Stop Information custom component that you may find at
 [https://github.com/amaximus/bkk_stop](https://github.com/amaximus/bkk_stop/).
@@ -11,7 +11,7 @@ on handling attributes in Lovelace, a Lovelace custom card was a dept and now ma
 
 #### Installation
 The easiest way to install it is through [HACS (Home Assistant Community Store)](https://custom-components.github.io/hacs/),
-search for <i>bkk</i> and select the one from Plugins.<br />
+search for <i>bkk</i> and select BKK Stop Card from Plugins.<br />
 If you are not using HACS, you may download bkk-stop-card.js and put it into $homeassistant_config_dir/www.<br />
 
 #### Lovelace UI configuration
