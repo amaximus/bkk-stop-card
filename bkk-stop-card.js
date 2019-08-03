@@ -266,4 +266,4 @@ class BKKStopCard extends HTMLElement {
   }
 }
 
-customElements.define('bkk_stop_card', BKKStopCard);
+customElements.define('bkk-stop-card', BKKStopCard);
