@@ -100,13 +100,13 @@ class BKKStopCard extends HTMLElement {
           case 'wheelchair':
             wheelchair[idx]='';
             if ( attributes.get(key).value ) {
-              wheelchair[idx]='<iron-icon icon="mdi:wheelchair-accessibility" class="extraic">';
+              wheelchair[idx]='<ha-icon icon="mdi:wheelchair-accessibility" class="extraic">';
             }
             break;
           case 'bikes':
             bikes[idx]='';
             if ( attributes.get(key).value ) {
-              bikes[idx]='<iron-icon icon="mdi:bike" class="extraic">';
+              bikes[idx]='<ha-icon icon="mdi:bike" class="extraic">';
             }
             break;
         }
@@ -235,7 +235,7 @@ class BKKStopCard extends HTMLElement {
     element.innerHTML = `
       ${attributes.map((attribute) => `
         <tr>
-          <td class="${attribute.vehicle}"><iron-icon icon="mdi:${attribute.icon}"></td>
+          <td class="${attribute.vehicle}"><ha-icon icon="mdi:${attribute.icon}"></td>
           <td><span class="emp">${attribute.key}</span> to ${attribute.headsign} in ${attribute.inmin} mins
           ${attribute.wheelchair}${attribute.bikes}</td>
         </tr>
