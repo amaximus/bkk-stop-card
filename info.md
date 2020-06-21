@@ -15,6 +15,17 @@ search for <i>bkk</i> and select BKK Stop Card from Plugins.<br />
 If you are not using HACS, you may download bkk-stop-card.js and put it into $homeassistant_config_dir/www.<br />
 
 #### Lovelace UI configuration
+
+Configuration parameters:<br />
+
+---
+| Name | Optional | `Default` | Description |
+| :---- | :---- | :------- | :----------- |
+| entity | **N** | - | name of the sensor of bkk_stop platform|
+| hide_in_mins | **Y** | `false` | Hide in_minutes information|
+| hide_at_time | **Y** | `true` | Hide at_time information|
+---
+
 Add the following lines to your ui-lovelace.yaml (entity should be the sensor of bkk_stop platform you defined):
 ```
 resources:
@@ -23,8 +34,10 @@ resources:
     cards:
       - type: custom:bkk-stop-card
         entity: sensor.bkk7u
+        hide_in_mins: false
       - type: custom:bkk-stop-card
         entity: sensor.bkkxu
+        hide_at_time: true
 ```
 
 Lovelace UI:<br />

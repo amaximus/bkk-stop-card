@@ -5,8 +5,6 @@ class BKKStopCard extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
-  version() { return "0.1.0"; }
-
   _getAttributes(hass, filter1) {
     var inmin = new Array();
     var routeid = new Array();
@@ -15,6 +13,7 @@ class BKKStopCard extends HTMLElement {
     var wheelchair = new Array();
     var bikes = new Array();
     var icon = new Array();
+    var attime = new Array();
     var routeobjarray = [];
     var station;
     var items;
@@ -43,12 +42,13 @@ class BKKStopCard extends HTMLElement {
     var supportedItems = 8;
     var filters1 = new Array();
     for (var k=0; k < supportedItems; k++) {
-      filters1[k*6+0] = {key: "sensor." + filter1 + ".routeid" + k};
-      filters1[k*6+1] = {key: "sensor."+ filter1 + ".type" + k};
-      filters1[k*6+2] = {key: "sensor."+ filter1 + ".headsign" + k};
-      filters1[k*6+3] = {key: "sensor."+ filter1 + ".in" + k};
-      filters1[k*6+4] = {key: "sensor."+ filter1 + ".wheelchair" + k};
-      filters1[k*6+5] = {key: "sensor."+ filter1 + ".bikes" + k};
+      filters1[k*7+0] = {key: "sensor." + filter1 + ".routeid" + k};
+      filters1[k*7+1] = {key: "sensor."+ filter1 + ".type" + k};
+      filters1[k*7+2] = {key: "sensor."+ filter1 + ".headsign" + k};
+      filters1[k*7+3] = {key: "sensor."+ filter1 + ".in" + k};
+      filters1[k*7+4] = {key: "sensor."+ filter1 + ".wheelchair" + k};
+      filters1[k*7+5] = {key: "sensor."+ filter1 + ".bikes" + k};
+      filters1[k*7+6] = {key: "sensor."+ filter1 + ".attime" + k};
     }
     filters1[supportedItems*6] = {key: "sensor." + filter1 + ".stationName"};
     filters1[supportedItems*6+1] = {key: "sensor." + filter1 + ".items"};
@@ -84,6 +84,9 @@ class BKKStopCard extends HTMLElement {
             break;
           case 'routeid':
             routeid[idx]=attributes.get(key).value;
+            break;
+          case 'attime':
+            attime[idx]=attributes.get(key).value;
             break;
           case 'type':
             vehicle[idx]=attributes.get(key).value.toLowerCase();
@@ -133,6 +136,7 @@ class BKKStopCard extends HTMLElement {
             wheelchair: wheelchair[i],
             bikes: bikes[i],
             icon: icon[i],
+            attime: attime[i],
             station:station
           });
         }
@@ -146,6 +150,7 @@ class BKKStopCard extends HTMLElement {
         wheelchair: '',
         bikes: '',
         icon: '',
+        attime: '',
         station: station
       }); 
     }
@@ -231,12 +236,14 @@ class BKKStopCard extends HTMLElement {
     this._config = cardConfig;
   }
 
-  _updateContent(element, attributes) {
+  _updateContent(element, attributes, h_in_mins, h_at_time) {
     element.innerHTML = `
       ${attributes.map((attribute) => `
         <tr>
           <td class="${attribute.vehicle}"><ha-icon icon="mdi:${attribute.icon}"></td>
-          <td><span class="emp">${attribute.key}</span> to ${attribute.headsign} in ${attribute.inmin} mins
+          <td><span class="emp">${attribute.key}</span> to ${attribute.headsign}
+          ${h_in_mins === false ? "in " + `${attribute.inmin}` + " mins"  : ''}
+          ${h_at_time === false ? "at " + `${attribute.attime}` : ''}
           ${attribute.wheelchair}${attribute.bikes}</td>
         </tr>
       `).join('')}
@@ -255,10 +262,15 @@ class BKKStopCard extends HTMLElement {
     const config = this._config;
     const root = this.shadowRoot;
 
+    let hide_in_mins = false;
+    if (typeof config.hide_in_mins != "undefined") hide_in_mins=config.hide_in_mins
+    let hide_at_time = true;
+    if (typeof config.hide_at_time != "undefined") hide_at_time=config.hide_at_time
+
     let attributes = this._getAttributes(hass, config.entity.split(".")[1]);
 
     this._updateStation(root.getElementById('station'), attributes);
-    this._updateContent(root.getElementById('attributes'), attributes);
+    this._updateContent(root.getElementById('attributes'), attributes, hide_in_mins, hide_at_time);
   }
 
   getCardSize() {
