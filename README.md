@@ -14,7 +14,7 @@ Inspired by [entity-attributes-card](https://github.com/custom-cards/entity-attr
 on handling attributes in Lovelace, a Lovelace custom card was a dept and now made available for BKK Stop.
 
 #### Installation
-The easiest way to install it is through [HACS (Home Assistant Community Store)](https://custom-components.github.io/hacs/),
+The easiest way to install it is through [HACS (Home Assistant Community Store)](https://github.com/hacs/frontend),
 search for <i>bkk</i> and select BKK Stop Card from Plugins.<br />
 If you are not using HACS, you may download bkk-stop-card.js and put it into $homeassistant_config_dir/www.<br />
 
