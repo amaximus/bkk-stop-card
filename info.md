@@ -30,7 +30,8 @@ Configuration parameters:<br />
 | hide_at_time | **Y** | `true` | Hide at_time information|
 ---
 
-Add the following lines to your ui-lovelace.yaml (entity should be the sensor of bkk_stop platform you defined):
+For yaml mode Lovelace dashboard add the lines below to your ui-lovelace.yaml. For non-yaml dashboard use: overview → edit dashboard → 3 dot again → raw edit and add the card info there.
+The entity should be the sensor of bkk_stop platform you defined.
 ```
 resources:
   - {type: module, url: '/www/community/bkk-stop-card/bkk-stop-card.js'}
