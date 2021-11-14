@@ -5,156 +5,59 @@ class BKKStopCard extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
-  _getAttributes(hass, filter1) {
-    var inmin = new Array();
-    var routeid = new Array();
-    var vehicle = new Array();
-    var headsign = new Array();
-    var wheelchair = new Array();
-    var bikes = new Array();
-    var icon = new Array();
-    var attime = new Array();
-    var routeobjarray = [];
-    var station;
-    var items;
+  _getAttributes(hass,entity) {
+    var res = [];
+    var bikes = "";
+    var icon;
+    var vehicle;
+    var wheelchair = "";
 
-    function _filterName(stateObj, pattern) {
-      let parts;
-      let attr_id;
-      let attribute;
+    if (typeof hass.states[`${entity}`] != "undefined") {
+      const data1 = hass.states[`${entity}`].attributes['vehicles'];
+      const station = hass.states[`${entity}`].attributes['stationName'];
 
-      if (typeof (pattern) === "object") {
-        parts = pattern["key"].split(".");
-        attribute = pattern["key"];
-      } else {
-        parts = pattern.split(".");
-        attribute = pattern;
-      }
-      attr_id = parts[2];
-
-      if (attr_id.indexOf('*') === -1) {
-        return stateObj == attribute;
-      }
-      const regEx = new RegExp(`^${attribute.replace(/\*/g, '.*')}$`, 'i');
-      return stateObj.search(regEx) === 0;
-    }
- 
-    var supportedItems = 8;
-    var filters1 = new Array();
-    for (var k=0; k < supportedItems; k++) {
-      filters1[k*7+0] = {key: "sensor." + filter1 + ".routeid" + k};
-      filters1[k*7+1] = {key: "sensor."+ filter1 + ".type" + k};
-      filters1[k*7+2] = {key: "sensor."+ filter1 + ".headsign" + k};
-      filters1[k*7+3] = {key: "sensor."+ filter1 + ".in" + k};
-      filters1[k*7+4] = {key: "sensor."+ filter1 + ".wheelchair" + k};
-      filters1[k*7+5] = {key: "sensor."+ filter1 + ".bikes" + k};
-      filters1[k*7+6] = {key: "sensor."+ filter1 + ".attime" + k};
-    }
-    filters1[supportedItems*6] = {key: "sensor." + filter1 + ".stationName"};
-    filters1[supportedItems*6+1] = {key: "sensor." + filter1 + ".items"};
-
-    const attributes = new Map();
-    filters1.forEach((filter) => {
-      const filters = [];
-
-      filters.push(stateObj => _filterName(stateObj, filter));
-
-      Object.keys(hass.states).sort().forEach(key => {
-        Object.keys(hass.states[key].attributes).sort().forEach(attr_key => {
-          if (filters.every(filterFunc => filterFunc(`${key}.${attr_key}`))) {
-            attributes.set(`${key}.${attr_key}`, {
-              value: `${hass.states[key].attributes[attr_key]} ${filter.unit||''}`.trim(),
-            });
-          }  
-        });
-      });
-    });
-
-    var attr = Array.from(attributes.keys());
-    var re = /\d$/;
-    attr.forEach(key => {
-      var newkey = key.split('.')[2];
-
-      if ( re.test(newkey) ) {
-        var idx = newkey[newkey.length - 1];
-        var name = newkey.slice(0, -1);
-        switch (name) {
-          case 'in':
-            inmin[idx]=attributes.get(key).value;
-            break;
-          case 'routeid':
-            routeid[idx]=attributes.get(key).value;
-            break;
-          case 'attime':
-            attime[idx]=attributes.get(key).value;
-            break;
-          case 'type':
-            vehicle[idx]=attributes.get(key).value.toLowerCase();
-            icon[idx]=attributes.get(key).value.toLowerCase();
-            if (attributes.get(key).value.toLowerCase() == "trolleybus") {
-              icon[idx]="bus"
-            } else if (attributes.get(key).value.toLowerCase() == "rail") {
-              icon[idx]="train"
-            }
-            break;
-          case 'headsign':
-            headsign[idx]=attributes.get(key).value;
-            break;
-          case 'wheelchair':
-            wheelchair[idx]='';
-            if ( attributes.get(key).value ) {
-              wheelchair[idx]='<ha-icon icon="mdi:wheelchair-accessibility" class="extraic">';
-            }
-            break;
-          case 'bikes':
-            bikes[idx]='';
-            if ( attributes.get(key).value ) {
-              bikes[idx]='<ha-icon icon="mdi:bike" class="extraic">';
-            }
-            break;
-        }
-      } else if ( newkey == "stationName") {
-        station = attributes.get(key).value;
-      } else if ( newkey == "items") {
-        items = attributes.get(key).value;
-      }
-    });
-    if ( items > 0 ) {
-      for (var i=0; i < items; i++) {
-        if ( routeid[i] ) {
-          if ( typeof wheelchair[i] == 'undefined' ) {
-            wheelchair[i] = '';
+      if (data1.length > 0) {
+        for(var i=0; i<data1.length; i++) {
+          if (data1[i].hasOwnProperty('wheelchair')) {
+            wheelchair='<ha-icon icon="mdi:wheelchair-accessibility" class="extraic">';
           }
-          if ( typeof bikes[i] == 'undefined' ) {
-            bikes[i] = '';
+          if (data1[i].hasOwnProperty('bikesAllowed')) {
+            bikes='<ha-icon icon="mdi:bike" class="extraic">';
           }
-          routeobjarray.push({
-            key: routeid[i],
-            vehicle: vehicle[i],
-            inmin: inmin[i],
-            headsign: headsign[i],
-            wheelchair: wheelchair[i],
-            bikes: bikes[i],
-            icon: icon[i],
-            attime: attime[i],
-            station:station
+          icon=data1[i].type.toLowerCase();
+          vehicle=icon;
+          if (icon == "trolleybus") {
+            icon="bus"
+          } else if (icon == "rail") {
+            icon="train"
+          }
+          res.push({
+            attime: data1[i].attime,
+            bikes: bikes,
+            headsign: data1[i].headsign,
+            inmin: data1[i].in,
+            icon: icon,
+            key: data1[i].routeid,
+            station: station,
+            vehicle: vehicle,
+            wheelchair: wheelchair,
           });
         }
+      } else {
+        routeobjarray.push({
+          key: 'No service',
+          vehicle: '',
+          inmin: 'following',
+          headsign: 'any destination',
+          wheelchair: '',
+          bikes: '',
+          icon: '',
+          attime: '',
+          station: station
+        });
       }
-    } else {
-      routeobjarray.push({
-        key: 'No service',
-        vehicle: '',
-        inmin: 'following',
-        headsign: 'any destination',
-        wheelchair: '',
-        bikes: '',
-        icon: '',
-        attime: '',
-        station: station
-      }); 
     }
-    return Array.from(routeobjarray.values());
+    return res;
   }
 
   setConfig(config) {
@@ -250,10 +153,10 @@ class BKKStopCard extends HTMLElement {
     `;
   }
 
-  _updateStation(element, attributes) {
+  _updateStation(element, attributes, name) {
     element.innerHTML = `
       ${attributes.map((attribute) => `
-        <h3>${attribute.station}</h3>
+        <h3>${name.length === 0 ? `${attribute.station}` : name}</h3>
       `)[0]}
     `;
   }
@@ -266,10 +169,12 @@ class BKKStopCard extends HTMLElement {
     if (typeof config.hide_in_mins != "undefined") hide_in_mins=config.hide_in_mins
     let hide_at_time = true;
     if (typeof config.hide_at_time != "undefined") hide_at_time=config.hide_at_time
+    let name = '';
+    if (typeof config.name != "undefined") name=config.name
 
-    let attributes = this._getAttributes(hass, config.entity.split(".")[1]);
+    let attributes = this._getAttributes(hass, config.entity);
 
-    this._updateStation(root.getElementById('station'), attributes);
+    this._updateStation(root.getElementById('station'), attributes, name);
     this._updateContent(root.getElementById('attributes'), attributes, hide_in_mins, hide_at_time);
   }
 
