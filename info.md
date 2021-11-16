@@ -28,6 +28,7 @@ Configuration parameters:<br />
 | entity | **N** | - | name of the sensor of bkk_stop platform|
 | hide_in_mins | **Y** | `false` | Hide in_minutes information|
 | hide_at_time | **Y** | `true` | Hide at_time information|
+| name | **Y** | `` | If specified it will overwrite the card title/station name |
 ---
 
 For yaml mode Lovelace dashboard add the lines below to your ui-lovelace.yaml. For non-yaml dashboard use: overview → edit dashboard → 3 dot again → raw edit and add the card info there.
