@@ -44,7 +44,7 @@ class BKKStopCard extends HTMLElement {
           });
         }
       } else {
-        routeobjarray.push({
+        res.push({
           key: 'No service',
           vehicle: '',
           inmin: 'following',
