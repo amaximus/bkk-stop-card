@@ -1,3 +1,4 @@
+
 class BKKStopCard extends HTMLElement {
 
   constructor() {
@@ -30,9 +31,10 @@ class BKKStopCard extends HTMLElement {
             icon="bus"
           } else if (icon == "rail") {
             icon="train"
-          }
+	  }
           res.push({
             attime: data1[i].attime,
+            predicted_attime: data1[i].predicted_attime,
             bikes: bikes,
             headsign: data1[i].headsign,
             inmin: data1[i].in,
@@ -53,6 +55,7 @@ class BKKStopCard extends HTMLElement {
           bikes: '',
           icon: '',
           attime: '',
+          predicted_attime: '',
           station: station
         });
       }
@@ -139,7 +142,7 @@ class BKKStopCard extends HTMLElement {
     this._config = cardConfig;
   }
 
-  _updateContent(element, attributes, h_in_mins, h_at_time) {
+  _updateContent(element, attributes, h_in_mins, h_at_time, h_predicted_at_time) {
     element.innerHTML = `
       ${attributes.map((attribute) => `
         <tr>
@@ -147,6 +150,7 @@ class BKKStopCard extends HTMLElement {
           <td><span class="emp">${attribute.key}</span> to ${attribute.headsign}
           ${h_in_mins === false ? "in " + `${attribute.inmin}` + " mins"  : ''}
           ${h_at_time === false ? "at " + `${attribute.attime}` : ''}
+	  ${h_predicted_at_time === false ? `${attribute.predicted_attime  ? "at " + `${attribute.predicted_attime}` + "(est.)"  : "at " + `${attribute.attime}`}`: '' }
           ${attribute.wheelchair}${attribute.bikes}</td>
         </tr>
       `).join('')}
@@ -164,7 +168,8 @@ class BKKStopCard extends HTMLElement {
   set hass(hass) {
     const config = this._config;
     const root = this.shadowRoot;
-
+    let hide_predicted_at_time = false;
+    if (typeof config.hide_predicted_at_time != "undefined") hide_predicted_at_time=config.hide_predicted_at_time
     let hide_in_mins = false;
     if (typeof config.hide_in_mins != "undefined") hide_in_mins=config.hide_in_mins
     let hide_at_time = true;
@@ -175,7 +180,7 @@ class BKKStopCard extends HTMLElement {
     let attributes = this._getAttributes(hass, config.entity);
 
     this._updateStation(root.getElementById('station'), attributes, name);
-    this._updateContent(root.getElementById('attributes'), attributes, hide_in_mins, hide_at_time);
+    this._updateContent(root.getElementById('attributes'), attributes, hide_in_mins, hide_at_time, hide_predicted_at_time);
   }
 
   getCardSize() {

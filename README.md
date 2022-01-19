@@ -28,6 +28,7 @@ Configuration parameters:<br />
 | entity | **N** | - | name of the sensor of bkk_stop platform|
 | hide_in_mins | **Y** | `false` | Hide in_minutes information|
 | hide_at_time | **Y** | `true` | Hide at_time information|
+| hide_predicted_at_time | **Y** | `true` | If set to false, this will show predicted times with an '(est.)' suffix, when estimated arrival times are available, otherwise it will show the time according to schedule |
 | name | **Y** | `` | If specified it will overwrite the card title/station name |
 ---
 
@@ -40,10 +41,15 @@ resources:
     cards:
       - type: custom:bkk-stop-card
         entity: sensor.bkk7u
-        hide_in_mins: false
+        hide_in_mins: false # it makes sense to set this to false if hide_predicted_at_time is true, as in_mins is calculated from "scheduled" times
+        hide_at_time: false 
+        hide_predicted_at_time: true
       - type: custom:bkk-stop-card
         entity: sensor.bkkxu
+        hide_in_mins: true
         hide_at_time: true
+        hide_predicted_at_time: false
+
 ```
 
 Lovelace UI:<br />
