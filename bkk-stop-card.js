@@ -10,6 +10,8 @@ class BKKStopCard extends HTMLElement {
     var res = [];
     var bikes = "";
     var icon;
+    var max_items = this._config.max_items;
+    var nr_of_items;
     var vehicle;
     var wheelchair = "";
 
@@ -18,7 +20,9 @@ class BKKStopCard extends HTMLElement {
       const station = hass.states[`${entity}`].attributes['stationName'];
 
       if (data1.length > 0) {
-        for(var i=0; i<data1.length; i++) {
+        nr_of_items= max_items > 0 ? Math.min(data1.length,max_items) : data1.length;
+
+        for(var i=0; i<nr_of_items; i++) {
           if (data1[i].hasOwnProperty('wheelchair')) {
             wheelchair='<ha-icon icon="mdi:wheelchair-accessibility" class="extraic">';
           }
@@ -31,7 +35,7 @@ class BKKStopCard extends HTMLElement {
             icon="bus"
           } else if (icon == "rail") {
             icon="train"
-	  }
+          }
           res.push({
             attime: data1[i].attime,
             predicted_attime: data1[i].predicted_attime,
@@ -148,9 +152,9 @@ class BKKStopCard extends HTMLElement {
         <tr>
           <td class="${attribute.vehicle}"><ha-icon icon="mdi:${attribute.icon}"></td>
           <td><span class="emp">${attribute.key}</span> to ${attribute.headsign}
-          ${h_in_mins === false ? "in " + `${attribute.inmin}` + " mins"  : ''}
+          ${h_in_mins === false ? "in " + `${attribute.inmin}` + " mins" : ''}
           ${h_at_time === false ? "at " + `${attribute.attime}` : ''}
-	  ${h_predicted_at_time === false ? `${attribute.predicted_attime  ? "at " + `${attribute.predicted_attime}` + "(est.)"  : "at " + `${attribute.attime}`}`: '' }
+          ${h_predicted_at_time === false ? `${attribute.predicted_attime ? "at " + `${attribute.predicted_attime}` + "(est.)" : "at " + `${attribute.attime}`}`: '' }
           ${attribute.wheelchair}${attribute.bikes}</td>
         </tr>
       `).join('')}
@@ -176,6 +180,8 @@ class BKKStopCard extends HTMLElement {
     if (typeof config.hide_at_time != "undefined") hide_at_time=config.hide_at_time
     let name = '';
     if (typeof config.name != "undefined") name=config.name
+    let max_items = 0;
+    if (typeof config.max_items != "undefined") max_items=config.max_items
 
     let attributes = this._getAttributes(hass, config.entity);
 

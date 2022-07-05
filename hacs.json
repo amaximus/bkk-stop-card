@@ -1,0 +1,7 @@
+{
+  "name": "BKK Stop Information Card",
+  "content_in_root": "true",
+  "filename": "bkk-stop-card.js",
+  "render_readme": "true",
+  "country": ["HU"]
+}

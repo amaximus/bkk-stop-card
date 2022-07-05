@@ -29,6 +29,7 @@ Configuration parameters:<br />
 | hide_in_mins | **Y** | `false` | Hide in_minutes information|
 | hide_at_time | **Y** | `true` | Hide at_time information|
 | hide_predicted_at_time | **Y** | `true` | If set to false, this will show predicted times with an '(est.)' suffix, when estimated arrival times are available, otherwise it will show the time according to schedule |
+| max_items | **Y** | `0` | Number of items to show. 0: no limit |
 | name | **Y** | `` | If specified it will overwrite the card title/station name |
 ---
 
@@ -42,7 +43,7 @@ resources:
       - type: custom:bkk-stop-card
         entity: sensor.bkk7u
         hide_in_mins: false # it makes sense to set this to false if hide_predicted_at_time is true, as in_mins is calculated from "scheduled" times
-        hide_at_time: false 
+        hide_at_time: false
         hide_predicted_at_time: true
       - type: custom:bkk-stop-card
         entity: sensor.bkkxu
