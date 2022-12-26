@@ -1,4 +1,3 @@
-
 class BKKStopCard extends HTMLElement {
 
   constructor() {
@@ -83,7 +82,6 @@ class BKKStopCard extends HTMLElement {
     style.textContent = `
       h3 {
         text-align: center;
-        padding-top:15px;
       }
       table {
         width: 100%;
@@ -95,42 +93,49 @@ class BKKStopCard extends HTMLElement {
       thead th {
         text-align: left;
       }
-      tbody tr:nth-child(odd) {
-        background-color: var(--paper-card-background-color);
-        vertical-align: middle;
-      }
-      tbody tr:nth-child(even) {
-        background-color: var(--secondary-background-color);
-      }
       td {
         padding-left: 5px;
+        vertical-align: middle;
+      }
+      .highlight {
+        font-weight: bold;
+        font-size: 150%;
+        width: 2em;
+      }
+      .vehicle {
+        text-align: center;
+        padding: 3px 10px 3px 10px;
+        border-radius: 3px;
+        color: #ffffff;
       }
       .emp {
-         font-weight: bold;
-         font-size: 120%;
+        font-weight: bold;
+        font-size: 120%;
       }
       .extraic {
-         width: 1em;
-         padding-left: 5px;
+        width: 1em;
+        padding-left: 5px;
       }
       .bus {
-         color: #44739e;
-         width: 0.1em;
+        background-color: #009FE3;
       }
       .trolleybus {
-         color: #cc0000;
-         width: 1.5em;
+        background-color: #E5231B;
       }
       .tram {
-         color: #e1e100;
-         width: 1.5em;
+        background-color: #FFD500;
       }
       .rail {
-         color: #2ecc71;
-         width: 1.5em;
+        background-color: #2ECC71;
       }
       .subway {
-         width: 1.5em;
+        width: 1.5em;
+      }
+      .arrival-time {
+        text-align: right;
+      }
+      .estimated {
+        color: #208C4E;
       }
     `;
     content.innerHTML = `
@@ -150,12 +155,9 @@ class BKKStopCard extends HTMLElement {
     element.innerHTML = `
       ${attributes.map((attribute) => `
         <tr>
-          <td class="${attribute.vehicle}"><ha-icon icon="mdi:${attribute.icon}"></td>
-          <td><span class="emp">${attribute.key}</span> to ${attribute.headsign}
-          ${h_in_mins === false ? "in " + `${attribute.inmin}` + " mins" : ''}
-          ${h_at_time === false ? "at " + `${attribute.attime}` : ''}
-          ${h_predicted_at_time === false ? `${attribute.predicted_attime ? "at " + `${attribute.predicted_attime}` + "(est.)" : "at " + `${attribute.attime}`}`: '' }
-          ${attribute.wheelchair}${attribute.bikes}</td>
+          <td class="highlight vehicle ${attribute.vehicle}">${attribute.key}</td>
+          <td class="">${attribute.headsign}</td>
+          <td class="highlight arrival-time ${attribute.predicted_attime ? "estimated" : ''}">${attribute.inmin}'</td>
         </tr>
       `).join('')}
     `;
