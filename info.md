@@ -31,6 +31,7 @@ Configuration parameters:<br />
 | hide_predicted_at_time | **Y** | `true` | If set to false, this will show predicted times with an '(est.)' suffix, when estimated arrival times are available, otherwise it will show the time according to schedule |
 | max_items | **Y** | `0` | Number of items to show. 0: no limit |
 | name | **Y** | `` | If specified it will overwrite the card title/station name |
+| layout_bpgo | **Y** | `false` | Use Budapest GO layout |
 ---
 
 For yaml mode Lovelace dashboard add the lines below to your ui-lovelace.yaml. For non-yaml dashboard use: overview → edit dashboard → 3 dot again → raw edit and add the card info there.

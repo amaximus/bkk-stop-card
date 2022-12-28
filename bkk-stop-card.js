@@ -92,45 +92,71 @@ class BKKStopCard extends HTMLElement {
         margin-left: 16px;
         margin-right: 16px;
       }
-      thead th {
-        text-align: left;
-      }
-      tbody tr:nth-child(odd) {
+      table tr:nth-child(odd) {
         background-color: var(--paper-card-background-color);
         vertical-align: middle;
       }
-      tbody tr:nth-child(even) {
+      table tr:nth-child(even) td:not(.bpgo) {
         background-color: var(--secondary-background-color);
       }
       td {
         padding-left: 5px;
       }
+      .highlight {
+        font-weight: bold;
+        font-size: 150%;
+        width: 2em;
+      }
+      .vehicle {
+        text-align: center;
+        padding: 3px 10px 3px 10px;
+        border-radius: 3px;
+        color: #ffffff;
+      }
       .emp {
-         font-weight: bold;
-         font-size: 120%;
+        font-weight: bold;
+        font-size: 120%;
       }
       .extraic {
-         width: 1em;
-         padding-left: 5px;
+        width: 1em;
+        padding-left: 5px;
       }
       .bus {
-         color: #44739e;
-         width: 0.1em;
+        color: #44739e;
+        width: 0.1em;
+      }
+      .bus_bpgo {
+        background-color: #009FE3;
       }
       .trolleybus {
-         color: #cc0000;
-         width: 1.5em;
+        color: #cc0000;
+        width: 1.5em;
+      }
+      .trolleybus_bpgo {
+        background-color: #E5231B;
       }
       .tram {
-         color: #e1e100;
-         width: 1.5em;
+        color: #e1e100;
+        width: 1.5em;
+      }
+      .tram_bpgo {
+        background-color: #FFD500;
       }
       .rail {
-         color: #2ecc71;
-         width: 1.5em;
+        color: #2ecc71;
+        width: 1.5em;
+      }
+      .rail_bpgo {
+        background-color: #2ECC71;
       }
       .subway {
-         width: 1.5em;
+        width: 1.5em;
+      }
+      .arrival-time {
+        text-align: right;
+      }
+      .estimated {
+        color: #208C4E;
       }
     `;
     content.innerHTML = `
@@ -146,19 +172,31 @@ class BKKStopCard extends HTMLElement {
     this._config = cardConfig;
   }
 
-  _updateContent(element, attributes, h_in_mins, h_at_time, h_predicted_at_time) {
-    element.innerHTML = `
-      ${attributes.map((attribute) => `
-        <tr>
-          <td class="${attribute.vehicle}"><ha-icon icon="mdi:${attribute.icon}"></td>
-          <td><span class="emp">${attribute.key}</span> to ${attribute.headsign}
-          ${h_in_mins === false ? "in " + `${attribute.inmin}` + " mins" : ''}
-          ${h_at_time === false ? "at " + `${attribute.attime}` : ''}
-          ${h_predicted_at_time === false ? `${attribute.predicted_attime ? "at " + `${attribute.predicted_attime}` + "(est.)" : "at " + `${attribute.attime}`}`: '' }
-          ${attribute.wheelchair}${attribute.bikes}</td>
-        </tr>
-      `).join('')}
-    `;
+  _updateContent(element, attributes, h_in_mins, h_at_time, h_predicted_at_time, l_bpgo) {
+    if (l_bpgo) { /// BP GO layout
+      element.innerHTML = `
+        ${attributes.map((attribute) => `
+          <tr>
+            <td class="highlight vehicle bpgo ${attribute.vehicle}_bpgo">${attribute.key}</td>
+            <td class="bpgo">${attribute.headsign}</td>
+            <td class="highlight arrival-time bpgo ${attribute.predicted_attime ? "estimated" : ''}">${attribute.inmin}'</td>
+          </tr>
+        `).join('')}
+      `;
+    } else { /// original layout
+      element.innerHTML = `
+        ${attributes.map((attribute) => `
+          <tr>
+            <td class="${attribute.vehicle}"><ha-icon class="${attribute.vehicle}" icon="mdi:${attribute.icon}"></td>
+            <td><span class="emp">${attribute.key}</span> to ${attribute.headsign}
+            ${h_in_mins === false ? "in " + `${attribute.inmin}` + " mins" : ''}
+            ${h_at_time === false ? "at " + `${attribute.attime}` : ''}
+            ${h_predicted_at_time === false ? `${attribute.predicted_attime ? "at " + `${attribute.predicted_attime}` + "(est.)" : "at " + `${attribute.attime}`}`: '' }
+            ${attribute.wheelchair}${attribute.bikes}</td>
+          </tr>
+        `).join('')}
+      `;
+    }
   }
 
   _updateStation(element, attributes, name) {
@@ -182,11 +220,13 @@ class BKKStopCard extends HTMLElement {
     if (typeof config.name != "undefined") name=config.name
     let max_items = 0;
     if (typeof config.max_items != "undefined") max_items=config.max_items
+    let layout_bpgo = false;
+    if (typeof config.layout_bpgo != "undefined") layout_bpgo=config.layout_bpgo
 
     let attributes = this._getAttributes(hass, config.entity);
 
     this._updateStation(root.getElementById('station'), attributes, name);
-    this._updateContent(root.getElementById('attributes'), attributes, hide_in_mins, hide_at_time, hide_predicted_at_time);
+    this._updateContent(root.getElementById('attributes'), attributes, hide_in_mins, hide_at_time, hide_predicted_at_time, layout_bpgo);
   }
 
   getCardSize() {
