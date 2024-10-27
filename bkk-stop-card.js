@@ -14,6 +14,7 @@ class BKKStopCard extends HTMLElement {
     var nr_of_items;
     var vehicle;
     var wheelchair = "";
+    var nightbus = "";
 
     if (typeof hass.states[`${entity}`] != "undefined") {
       const data1 = hass.states[`${entity}`].attributes['vehicles'];
@@ -36,6 +37,11 @@ class BKKStopCard extends HTMLElement {
           } else if (icon == "rail") {
             icon="train"
           }
+          if (vehicle == "bus" && /^(6|9[0-9]{2}[A-Z]?)$/.test(data1[i].routeid)) {
+            nightbus = "_night";
+          } else {
+            nightbus = "";
+          }
           res.push({
             attime: data1[i].attime,
             predicted_attime: data1[i].predicted_attime,
@@ -47,6 +53,7 @@ class BKKStopCard extends HTMLElement {
             station: station,
             vehicle: vehicle,
             wheelchair: wheelchair,
+            nightbus: nightbus,
           });
         }
       } else {
@@ -55,6 +62,7 @@ class BKKStopCard extends HTMLElement {
           vehicle: '',
           inmin: 'following',
           headsign: 'any destination',
+          nightbus: '',
           wheelchair: '',
           bikes: '',
           icon: '',
@@ -128,6 +136,9 @@ class BKKStopCard extends HTMLElement {
       .bus_bpgo {
         background-color: #009FE3;
       }
+      .bus_bpgo_night {
+        background-color: #000000;
+      }
       .trolleybus {
         color: #cc0000;
         width: 1.5em;
@@ -177,7 +188,7 @@ class BKKStopCard extends HTMLElement {
       element.innerHTML = `
         ${attributes.map((attribute) => `
           <tr>
-            <td class="highlight vehicle bpgo ${attribute.vehicle}_bpgo">${attribute.key}</td>
+            <td class="highlight vehicle bpgo ${attribute.vehicle}_bpgo${attribute.nightbus}">${attribute.key}</td>
             <td class="bpgo">${attribute.headsign}</td>
             <td class="highlight arrival-time bpgo ${attribute.predicted_attime ? "estimated" : ''}">${attribute.inmin}'</td>
           </tr>
