@@ -89,10 +89,6 @@ class BKKStopCard extends HTMLElement {
     const content = document.createElement('div');
     const style = document.createElement('style');
     style.textContent = `
-      h3 {
-        text-align: center;
-        padding-top:15px;
-      }
       table {
         width: 100%;
         padding: 0px 36px 16px 0px;
@@ -169,6 +165,20 @@ class BKKStopCard extends HTMLElement {
       .estimated {
         color: #208C4E;
       }
+      .h_station {
+        padding-left: 5em;
+        padding-bottom: 15px;
+        display: inline-block;
+        float: left;
+      }
+      .refresh {
+        display: inline-block;
+        margin-left: auto;
+        margin-right: 20px;
+        float: right;
+        background-color: #e0e0e0;
+        padding: 4px;
+        border-radius: 20%;
     `;
     content.innerHTML = `
       <p id='station'>
@@ -213,14 +223,16 @@ class BKKStopCard extends HTMLElement {
   _updateStation(element, attributes, name) {
     element.innerHTML = `
       ${attributes.map((attribute) => `
-        <h3>${name.length === 0 ? `${attribute.station}` : name}</h3>
+        <div class="h_station emp">${name.length === 0 ? `${attribute.station}` : name}</div>
+        <div class="refresh"><ha-icon icon="mdi:sync" id="b_refresh">
       `)[0]}
     `;
+    this._root.getElementById('b_refresh').addEventListener('click', this._refresh.bind(this));
   }
 
   set hass(hass) {
     const config = this._config;
-    const root = this.shadowRoot;
+    this._root = this.shadowRoot;
     let hide_predicted_at_time = false;
     if (typeof config.hide_predicted_at_time != "undefined") hide_predicted_at_time=config.hide_predicted_at_time
     let hide_in_mins = false;
@@ -235,9 +247,14 @@ class BKKStopCard extends HTMLElement {
     if (typeof config.layout_bpgo != "undefined") layout_bpgo=config.layout_bpgo
 
     let attributes = this._getAttributes(hass, config.entity);
+    this._hass = hass;
 
-    this._updateStation(root.getElementById('station'), attributes, name);
-    this._updateContent(root.getElementById('attributes'), attributes, hide_in_mins, hide_at_time, hide_predicted_at_time, layout_bpgo);
+    this._updateStation(this._root.getElementById('station'), attributes, name);
+    this._updateContent(this._root.getElementById('attributes'), attributes, hide_in_mins, hide_at_time, hide_predicted_at_time, layout_bpgo);
+  }
+
+  _refresh() {
+    this._hass.callService('bkk_stop', 'refresh', { entity_id: this._config.entity });
   }
 
   getCardSize() {
