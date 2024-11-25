@@ -175,10 +175,12 @@ class BKKStopCard extends HTMLElement {
         display: inline-block;
         margin-left: auto;
         margin-right: 20px;
+        margin-top: -5px;
         float: right;
         background-color: #e0e0e0;
         padding: 4px;
         border-radius: 20%;
+        color: var(--paper-item-icon-color);
     `;
     content.innerHTML = `
       <p id='station'>
